@@ -1,0 +1,133 @@
+{% extends 'base-layout.html' %}
+{% load substract %}
+{% load static %}
+
+{% block title %}BookSaw | Корзина{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function () {
+            $('body').on('click', '.number-minus, .number-plus', function () {
+                const $row = $(this).closest('.number');
+                const $input = $row.find('.number-text');
+                const step = $row.data('step');
+                let val = parseFloat($input.val());
+                if ($(this).hasClass('number-minus')) {
+                    val -= step;
+                } else {
+                    val += step;
+                }
+                $input.val(val);
+                $input.change();
+                return false;
+            });
+
+            $('body').on('change', '.number-text', function () {
+                const $input = $(this);
+                const $row = $input.closest('.number');
+                const step = $row.data('step');
+                const min = parseInt($row.data('min'));
+                const max = parseInt($row.data('max'));
+
+                let val = parseFloat($input.val());
+                if (isNaN(val)) {
+                    val = step;
+                } else if (min && val < min) {
+                    val = min;
+                } else if (max && val > max) {
+                    val = max;
+                }
+                $input.val(val);
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <section>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-9 mt-3">
+                    {% if cart.items|length != 0 %}
+
+                        {% for item in cart.items %}
+                            <div class="card mb-3">
+                                <div class="row g-0">
+                                    <div class="col-2">
+                                        <img src="{{ item.book.image.url }}"
+                                             class="img-fluid rounded-start"
+                                             style="aspect-ratio: 0.75; object-fit: cover; object-position: center"
+                                             alt="...">
+                                    </div>
+
+                                    <div class="col-10">
+                                        <div class="card-body vstack h-100">
+
+                                            <div class="hstack justify-content-between">
+                                                <h5 class="card-title">{{ item.book.name }}</h5>
+                                                <div class="item-price">
+                                                    {% if item.book.is_discounted %}
+                                                        <span class="prev-price">{{ item.total_discount }} $</span>
+                                                    {% endif %}
+                                                    {{ item.total_price }} $
+                                                </div>
+                                            </div>
+
+                                            <p class="card-text">{{ item.book.author }}</p>
+
+                                            <div class="d-flex justify-content-between">
+                                                <div class="d-flex gap-3 align-items-center">
+                                                    <form method="post"
+                                                          action="{% url 'cart:remove_from_cart' item.book.id %}"
+                                                          class="m-0">
+                                                        {% csrf_token %}
+                                                        <button class="p-1" style="width: 24px; height: 24px">-</button>
+                                                    </form>
+
+                                                    <div>{{ item.count }}</div>
+
+                                                    <form method="post"
+                                                          action="{% url 'cart:add_in_cart' item.book.id %}"
+                                                          class="m-0">
+                                                        {% csrf_token %}
+                                                        <button class="p-1" style="width: 24px; height: 24px">+</button>
+                                                    </form>
+                                                </div>
+
+                                                <form class="m-0" method="post"
+                                                      action="{% url 'cart:delete_from_cart' item.book.id %}">
+                                                    {% csrf_token %}
+                                                    <button class="btn btn-outline-primary align-self-start mt-auto">
+                                                        Удалить
+                                                    </button>
+                                                </form>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        {% endfor %}
+
+                    {% else %}
+                        <p>Вы не выбрали еще ни один товар</p>
+                    {% endif %}
+
+                </div>
+
+                {% if cart.items|length != 0 %}
+                    <div class="col-3 mt-3">
+                        <div class="card p-3">
+                            <h5 class="card-title">{{ cart.book_count }} - шт.</h5>
+                            <hr class="my-3"/>
+                            <div class="card-text fw-bold">Итого: {{ cart.total_price }}$</div>
+                            <a type="submit" href="{% url 'main:checkout' %}" class="btn w-100 mt-3">Оформить</a>
+                        </div>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </section>
+{% endblock %}

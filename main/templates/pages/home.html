@@ -1,0 +1,253 @@
+{% extends 'base-layout.html' %}
+{% load substract %}
+{% load static %}
+
+{% block title %}BookSaw - Книжный интернет магазин{% endblock %}
+
+{% block content %}
+
+    {% if new_books|length != 0 %}
+        <section id="billboard">
+            <div id="home" class="container">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <button class="prev slick-arrow">
+                            <i class="icon icon-arrow-left"></i>
+                        </button>
+
+                        <div class="main-slider pattern-overlay">
+                            {% for book in new_books %}
+                                <div class="slider-item">
+                                    <div class="banner-content">
+                                        <h2 class="banner-title">{{ book.name }}</h2>
+                                        <p>{{ book.description }}</p>
+
+                                        <div class="btn-wrap">
+                                            <a href="{% url 'main:detail' book.id %}"
+                                               class="btn btn-outline-accent btn-accent-arrow">
+                                                Подробнее
+                                                <i class="icon icon-ns-arrow-right"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <img src="{{ book.image.url }}" style="object-fit: cover; min-width: 400px"
+                                         alt="banner" class="banner-image">
+
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <button class="next slick-arrow">
+                            <i class="icon icon-arrow-right"></i>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+
+    <section id="featured-books" class="py-5 my-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+
+                    <div class="section-header align-center">
+                        <div class="title">
+                            <span>Свежие страницы</span>
+                        </div>
+                        <h2 class="section-title">Новые книги</h2>
+                    </div>
+
+                    <div class="product-list" data-aos="fade-up">
+                        <div class="row">
+
+                            {% for book in last_new_books %}
+                                <div class="col-md-3">
+                                    <div class="product-item">
+                                        <figure class="product-style">
+                                            <img src="{{ book.image.url }}"
+                                                 alt="Books"
+                                                 class="product-item">
+
+                                            {% if user.is_authenticated %}
+                                                <form method="post" action="{% url 'cart:add_in_cart' book.id %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="add-to-cart"
+                                                            data-product-tile="add-to-cart">
+                                                        Добавить в корзину
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+
+                                        </figure>
+                                        <figcaption>
+                                            <a href="{% url 'main:detail' book.id %}">
+                                                <h3>{{ book.name }}</h3>
+                                            </a>
+                                            <span>{{ book.author }}</span>
+                                            <div class="item-price">
+                                                {% if book.is_discounted %}
+                                                    <span class="prev-price">{{ book.price }} $</span>
+                                                {% endif %}
+
+                                                {{ book.price|subtract:book.discount }} $
+                                            </div>
+                                        </figcaption>
+                                    </div>
+                                </div>
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+
+                    <div class="btn-wrap align-right">
+                        <a href="{% url 'main:books' %}?&is_new=on" class="btn-accent-arrow">
+                            Все книги
+                            <i class="icon icon-ns-arrow-right"></i>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="best-selling" class="leaf-pattern-overlay">
+        <div class="corner-pattern-overlay"></div>
+        <div class="container">
+            <div class="row justify-content-center">
+
+                <div class="col-md-8">
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            <figure class="products-thumb">
+                                <img src="{{ random_book.image.url }}" style="object-fit: cover; width: 100%;"
+                                     alt="book"
+                                     class="single-image">
+                            </figure>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="product-entry">
+                                <h2 class="section-title divider">Случайная книга</h2>
+
+                                <div class="products-content">
+                                    <div class="author-name">{{ random_book.author }}</div>
+                                    <a href="{% url 'main:detail' random_book.id %}">
+                                        <h3 class="item-title">{{ random_book.name }}</h3>
+                                    </a>
+                                    <p>{{ random_book.description }}</p>
+                                    <div class="item-price">
+                                        {% if random_book.is_discounted %}
+                                            <span class="prev-price">{{ random_book.price }} $</span>
+                                        {% endif %}
+                                        {{ random_book.price|subtract:random_book.discount }} $
+                                    </div>
+                                    {% if user.is_authenticated %}
+                                        <form method="post" action="{% url 'cart:add_in_cart' random_book.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="add-to-cart"
+                                                    data-product-tile="add-to-cart">
+                                                Добавить в корзину
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="quotation" class="align-center pb-5 mb-5 mt-3">
+        <div class="inner-content">
+            <h2 class="section-title divider">Цитата</h2>
+            <blockquote data-aos="fade-up">
+                <q>Чем больше вы будете читать, тем больше вещей вы узнаете. Чем больше вы узнаете, тем в большем
+                    количестве мест
+                    вы побываете</q>
+                <div class="author-name">Dr. Seuss</div>
+            </blockquote>
+        </div>
+    </section>
+
+    {% if discount_books|length != 0 %}
+        <section id="special-offer" class="bookshelf pb-5 mb-5">
+
+            <div class="section-header align-center">
+                <div class="title">
+                    <span>Не упустите момент</span>
+                </div>
+                <h2 class="section-title">Книги со скидкой</h2>
+            </div>
+
+            <div class="container">
+                <div class="row">
+                    <div class="inner-content">
+                        <div class="product-list" data-aos="fade-up">
+                            <div class="grid product-grid">
+
+                                {% for book in discount_books %}
+                                    <div class="product-item">
+                                        <figure class="product-style">
+                                            <img src="{{ book.image.url }}" alt="Books" class="product-item">
+                                            {% if user.is_authenticated %}
+                                                <form method="post" action="{% url 'cart:add_in_cart' book.id %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit"
+                                                            class="add-to-cart"
+                                                            data-product-tile="add-to-cart">
+                                                        Добавить в корзину
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        </figure>
+                                        <figcaption>
+                                            <a href="{% url 'main:detail' book.id %}">
+                                                <h3>{{ book.name }}</h3>
+                                            </a>
+                                            <span>{{ book.author }}</span>
+                                            <div class="item-price">
+                                                <span class="prev-price">{{ book.price }} $</span>
+                                                {{ book.price|subtract:book.discount }} $
+                                            </div>
+                                        </figcaption>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="btn-wrap align-right">
+                            <a href="{% url 'main:books' %}?&is_discounted=on" class="btn-accent-arrow">
+                                Все книги
+                                <i class="icon icon-ns-arrow-right"></i>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    {% endif %}
+
+{% endblock %}

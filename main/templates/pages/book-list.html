@@ -1,0 +1,138 @@
+{% extends 'base-layout.html' %}
+{% load divideby %}
+{% load substract %}
+{% load static %}
+
+{% block title %}BookSaw - Книжный интернет магазин{% endblock %}
+
+{% block content %}
+    <section>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-3">
+                    <form method="get" class="p-3 mt-3 bg-body-tertiary vstack g-3">
+                        <div>
+                            <label>Жанры:</label>
+
+                            <div class="list-group">
+                                {% for genre in first_genres %}
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               name="genres"
+                                               {% if genre.id|stringformat:'i' in selected_genres %}checked{% endif %}
+                                               value="{{ genre.id }}"
+                                               id="{{ genre.name }}">
+
+                                        <label class="form-check-label" for="{{ genre.name }}">
+                                            {{ genre.name }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+
+                                <div class="collapse" id="collapseExample">
+                                    {% for genre in rest_genres %}
+                                        <div class="form-check">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   name="genres"
+                                                   {% if genre.id|stringformat:'i' in selected_genres %}checked{% endif %}
+                                                   value="{{ genre.id }}"
+                                                   id="{{ genre.name }}">
+
+                                            <label class="form-check-label" for="{{ genre.name }}">
+                                                {{ genre.name }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+
+                            </div>
+
+                            <button class="btn btn-sm btn-outline-primary mb-3"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseExample"
+                                    aria-expanded="false"
+                                    aria-controls="collapseExample">
+                                <span class="genres">Все жанры</span>
+                            </button>
+                        </div>
+
+                        <div>
+                            <div class="form-check form-switch">
+                                <input name="is_discounted"
+                                       class="form-check-input"
+                                       {% if is_discounted %}checked{% endif %}
+                                       type="checkbox"
+                                       id="sale">
+                                <label class="form-check-label" for="sale">Книги со скидкой</label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="form-check form-switch">
+                                <input name="is_new"
+                                       class="form-check-input"
+                                       {% if is_new %}checked{% endif %}
+                                       type="checkbox"
+                                       id="new">
+                                <label class="form-check-label" for="new">Новые</label>
+                            </div>
+                        </div>
+
+                        <button>Применить</button>
+                    </form>
+                </div>
+
+                <div class="col-9">
+                    <div class="container bg-body-tertiary mt-3 p-3">
+                        {% if book_list|length != 0 %}
+                            {% for sublist in book_list|divideby:4 %}
+                                <div class="row">
+                                    {% for book in sublist %}
+                                        <div class="col-md-3">
+                                            <div class="product-item">
+                                                <figure class="product-style">
+                                                    <img src="{{ book.image.url }}"
+                                                         alt="Books"
+                                                         class="product-item">
+                                                    {% if user.is_authenticated %}
+                                                        <form method="post"
+                                                              action="{% url 'cart:add_in_cart' book.id %}">
+                                                            {% csrf_token %}
+                                                            <button type="submit"
+                                                                    class="add-to-cart"
+                                                                    data-product-tile="add-to-cart">
+                                                                Добавить в корзину
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
+                                                </figure>
+                                                <figcaption>
+                                                    <a href="{% url 'main:detail' book.id %}">
+                                                        <h3>{{ book.name }}</h3>
+                                                    </a>
+                                                    <span>{{ book.author }}</span>
+                                                    <div class="item-price">
+                                                        {% if book.is_discounted %}
+                                                            <span class="prev-price">{{ book.price }} $</span>
+                                                        {% endif %}
+                                                        {{ book.price|subtract:book.discount }} $
+                                                    </div>
+                                                </figcaption>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p>Не найдено ни одной книги...</p>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

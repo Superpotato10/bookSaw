@@ -1,0 +1,66 @@
+{% extends 'base-layout.html' %}
+{% load divideby %}
+{% load static %}
+
+{% block title %}BookSaw - Книжный интернет магазин{% endblock %}
+
+{% block content %}
+    <section class="container-fluid">
+        {% for sublist in order_list|divideby:2 %}
+            <div class="row mt-3">
+
+                {% for order in sublist %}
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <p class="card-title"><b>Заказ от - {{ order.created }}</b></p>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="card-subtitle"><b>Товары: </b></p>
+                                        <ul class="list-unstyled">
+                                            {% for item in order.orderitem_set.all %}
+                                                <li class="px-3">
+                                                    <a href="{% url 'main:detail' item.product.id %}">{{ item.product.name }}</a>
+                                                    - {{ item.get_total_price }} $ ({{ item.count }}шт.)
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                        <p class="card-title"><b>Итоговая сумма:</b> {{ order.get_order_price }}$</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="card-subtitle"><b>Информация о покупателе: </b></p>
+                                        <ul class="list-unstyled">
+                                            <li class="card-text px-3">
+                                                <b>Покупатель: </b>{{ order.last_name }} {{ order.first_name }}
+                                            </li>
+
+                                            <li class="card-text px-3">
+                                                <b>Email: </b>{{ order.email }}
+                                            </li>
+
+                                            <li class="card-text px-3">
+                                                <b>Город: </b>{{ order.city }}
+                                            </li>
+
+                                            <li class="card-text px-3">
+                                                <b>Адрес: </b>{{ order.address }}
+                                            </li>
+
+                                            <li class="card-text px-3">
+                                                <b>Индекс: </b>{{ order.postal_code }}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+
+            </div>
+        {% endfor %}
+    </section>
+{% endblock %}

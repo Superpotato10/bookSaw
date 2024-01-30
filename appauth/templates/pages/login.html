@@ -1,0 +1,27 @@
+{% extends 'auth-layout.html' %}
+{% load static %}
+
+{% block title %}BookSaw - Авторизация{% endblock %}
+
+{% block content %}
+    <section class="bg-body-tertiary p-3 card">
+        <h3>Авторизация</h3>
+
+        {{ form.non_field_errors }}
+
+        <form method="post" class="vstack gap-3 mb-3">
+            {% csrf_token %}
+            <div>
+                <label for="{{ form.username.id_for_label }}" class="form-label">Логин</label>
+                {{ form.username }}
+            </div>
+            <div>
+                <label for="{{ form.password.id_for_label }}" class="form-label">Пароль</label>
+                {{ form.password }}
+            </div>
+            <button type="submit" class="btn btn-primary">Войти</button>
+        </form>
+
+        <a href="{% url 'appauth:registration' %}">Нет аккаунта? Зарегестрируйтесь!</a>
+    </section>
+{% endblock %}

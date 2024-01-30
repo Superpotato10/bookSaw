@@ -1,0 +1,30 @@
+{% extends 'base-layout.html' %}
+{% load static %}
+
+{% block title %}BookSaw{% endblock %}
+{% block content %}
+    <section class="container-fluid">
+        <div class="row mt-3">
+            <div class="col-8">
+                <form id="order" class="p-3 bg-body-tertiary" method="post">
+                    {% csrf_token %}
+                    {{ form }}
+                </form>
+            </div>
+            <div class="col-4">
+                <div class="bg-body-tertiary p-3">
+                    <ul class="list-unstyled m-0">
+                        {% for item in cart.items %}
+                            <li><a href="{% url 'main:detail' item.book.id %}">
+                                {{ item.book.name }} </a> - {{ item.total_price }}$
+                                ({{ item.count }}шт.)
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="card-text fw-bold my-3">Итого: {{ cart.total_price }}$</div>
+                    <button type="submit" form="order">Купить</button>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

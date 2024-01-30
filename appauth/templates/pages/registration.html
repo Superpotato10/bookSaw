@@ -1,0 +1,43 @@
+{% extends 'auth-layout.html' %}
+{% load static %}
+
+
+{% block title %}BookSaw - Регистрация{% endblock %}
+
+{% block content %}
+    <section class="bg-body-tertiary p-3 card">
+        <h3>Регистрация</h3>
+
+        {% if form.errors %}
+            {% for field in form %}
+                <ul class="m-0">
+                    {% for error in field.errors %}
+                        <li>
+                            {{ error|escape }}
+                        </li>
+                    {% endfor %}
+                </ul>
+
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" class="vstack gap-3 mb-3">
+            {% csrf_token %}
+            <div>
+                <label for="{{ form.username.id_for_label }}" class="form-label">Логин</label>
+                {{ form.username }}
+            </div>
+            <div>
+                <label for="{{ form.password1.id_for_label }}" class="form-label">Пароль</label>
+                {{ form.password1 }}
+            </div>
+            <div>
+                <label for="{{ form.password2.id_for_label }}" class="form-label">Повтор пароля</label>
+                {{ form.password2 }}
+            </div>
+            <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+        </form>
+
+        <a href="{% url 'appauth:login' %}">Есть аккаунт? Войдите!</a>
+    </section>
+{% endblock %}

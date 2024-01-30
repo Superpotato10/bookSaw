@@ -1,0 +1,231 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="author" content="">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <link rel="icon" href="{% static 'images/site-icon.ico' %}">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/normalize.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'icomoon/icomoon.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/vendor.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.confing.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+    <style>
+        .dropdown-menu li {
+            padding: 0;
+        }
+
+        .profile-btn {
+            text-transform: none;
+            color: #555;
+        }
+    </style>
+    {% block style %}{% endblock %}
+</head>
+
+<body data-bs-spy="scroll" data-bs-target="#header" tabindex="0">
+
+<div id="header-wrap">
+    <div class="top-content">
+        <div class="container-fluid">
+            <div class="right-element">
+                {% if user.is_authenticated %}
+                    <div class="dropdown d-inline">
+
+                        <button class="profile-btn btn btn-link dropdown-toggle me-3" type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                            <i class="icon icon-user"></i> <span>{{ user }}</span>
+                        </button>
+
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'main:last-orders' %}">Cписок
+                                    заказов</a>
+                            </li>
+                            <li>
+                                <form class="dropdown-item m-0" method="post" action="{% url 'appauth:logout' %}">
+                                    {% csrf_token %}
+                                    <button style="background: none; margin: 0; padding: 0; color: var(--body-font); text-transform: none"
+                                            class="btn-link"
+                                            type="submit">
+                                        Выйти
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <a href="{% url 'main:cart' %}" class="cart for-buy">
+                        <i class="icon icon-clipboard"></i> <span>Корзина: {{ cart.total_price }}$</span></a>
+                {% else %}
+                    <a href="{% url 'appauth:login' %}">Войти</a>
+                {% endif %}
+
+
+                <div class="action-menu">
+                    <div class="search-bar">
+                        <a type="submit" class="search-button search-toggle"
+                           data-selector="#header-wrap">
+                            <i class="icon icon-search"></i>
+                        </a>
+                        <form role="search" method="get" action="{% url 'main:books' %}" class="search-box">
+                            <input class="search-field text search-input"
+                                   name="search"
+                                   placeholder="Поиск"
+                                   type="search"/>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <header id="header">
+        <div class="container-fluid">
+            <div class="row">
+
+                <div class="col-md-2">
+                    <div class="main-logo">
+                        <a href="{% url 'main:home' %}"><img src="{% static 'images/main-logo.png' %}" alt="logo"></a>
+                    </div>
+
+                </div>
+
+                <div class="col-md-10">
+
+                    <nav id="navbar">
+                        <div class="main-menu stellarnav">
+                            <ul class="menu-list">
+                                <li class="menu-item active">
+                                    <a href="{% if request.path == '/' %}#home{% else %}{% url 'main:home' %}{% endif %}">Главная</a>
+                                </li>
+                                <li class="menu-item">
+                                    <a href="{% if request.path == '/' %}#featured-books
+                                        {% else %}{% url 'main:books' %}?is_new=on{% endif %}">Новые</a>
+                                </li>
+                                <li class="menu-item">
+                                    <a href="{% if request.path == '/' %}#special-offer
+                                        {% else %}{% url 'main:books' %}?is_discounted=on{% endif %}">Скидки</a>
+                                </li>
+                            </ul>
+
+                            <div class="hamburger">
+                                <span class="bar"></span>
+                                <span class="bar"></span>
+                                <span class="bar"></span>
+                            </div>
+
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+</div>
+
+{% block content %}{% endblock %}
+
+
+<footer id="footer">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-md-8">
+
+                <div class="footer-item">
+                    <div class="company-brand">
+                        <img src="{% static 'images/main-logo.png' %}" alt="logo" class="footer-logo">
+                        <p>А увлекают меня такие книжки, что как их дочитаешь до конца — так сразу подумаешь: хорошо бы,
+                            если бы этот писатель стал твоим лучшим другом и чтоб с ним можно было поговорить по
+                            телефону, когда захочется.</p>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="col-md-2">
+
+                <div class="footer-menu">
+                    <h5>Книги</h5>
+                    <ul class="menu-list">
+                        <li class="menu-item">
+                            <a href="{% url 'main:books' %}?is_new=on">Новые</a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="{% url 'main:books' %}?is_discounted=on">Скидки</a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="{% url 'main:books' %}">Все книги</a>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+            <div class="col-md-2">
+
+                <div class="footer-menu">
+                    <h5>Аккаунт</h5>
+                    <ul class="menu-list">
+                        {% if user.is_authenticated %}
+                            <li class="menu-item">
+                                <a href="{% url 'main:cart' %}">Корзина</a>
+                            </li>
+                            <li class="menu-item">
+                                <form method="post" action="{% url 'appauth:logout' %}">
+                                    {% csrf_token %}
+                                    <button class="link-dark btn-link" type="submit" href="#">Выйти</button>
+                                </form>
+                            </li>
+                        {% else %}
+                            <li class="menu-item">
+                                <a href="{% url 'appauth:login' %}">Войти</a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="{% url 'appauth:registration' %}">Зарегистрироваться</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</footer>
+
+<div id="footer-bottom">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <p>© 2024 BookSaw</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/jquery-1.11.0.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+        crossorigin="anonymous"></script>
+<script src="{% static 'js/plugins.js' %}"></script>
+<script src="{% static 'js/script.js' %}"></script>
+{% block scripts %}{% endblock %}
+</body>
+
+</html>
