@@ -16,7 +16,7 @@ class CreateOrderForm(forms.ModelForm):
             'first_name': 'Имя',
             'last_name': 'Фамилия',
             'email': 'Email',
-            'address': 'Адресс',
+            'address': 'Адрес',
             'postal_code': 'Почтовый индекс',
             'city': 'Город',
         }
